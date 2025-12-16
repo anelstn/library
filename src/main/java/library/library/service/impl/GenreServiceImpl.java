@@ -1,45 +1,44 @@
 package library.library.service.impl;
 
-import library.library.model.Genre;
+import library.library.dto.GenreDto;
+import library.library.mapper.GenreMapper;
 import library.library.repository.GenreRepository;
 import library.library.service.GenreService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
+import java.util.Objects;
 
 @Service
+@RequiredArgsConstructor
 public class GenreServiceImpl implements GenreService {
-
-    @Autowired
-    private GenreRepository genreRepository;
-
-    @Override
-    public List<Genre> getAll() {
-        return genreRepository.findAll();
-    }
+    private final GenreRepository repository;
+    private final GenreMapper mapper;
 
     @Override
-    public Genre getById(Long id) {
-        return genreRepository.findById(id).orElse(null);
+    public List<GenreDto> getAll() {
+        return mapper.toDtoList(repository.findAll());
     }
-
     @Override
-    public void add(Genre genre) {
-        genreRepository.save(genre);
+    public GenreDto getById(Long id) {
+        return mapper.toDto(repository.findById(id).orElse(null));
     }
-
     @Override
-    public void update(Long id, Genre genre) {
-        Genre existing = genreRepository.findById(id).orElse(null);
-        if (existing != null) {
-            existing.setName(genre.getName());
-            genreRepository.save(existing);
-        }
+    public boolean add(GenreDto genreDto) {
+        if (Objects.isNull(genreDto)) return false;
+        repository.save(mapper.toEntity(genreDto));
+        return true;
     }
-
+    @Override
+    public boolean update(Long id, GenreDto genreDto) {
+        GenreDto oldGenre = getById(id);
+        if (Objects.isNull(oldGenre) || Objects.isNull(genreDto)) return false;
+        oldGenre.setNameDto(genreDto.getNameDto());
+        repository.save(mapper.toEntity(oldGenre));
+        return true;
+    }
     @Override
     public void delete(Long id) {
-        genreRepository.deleteById(id);
+        repository.deleteById(id);
     }
 }

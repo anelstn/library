@@ -1,48 +1,48 @@
 package library.library.controller;
 
-import library.library.model.Genre;
+import library.library.dto.GenreDto;
 import library.library.service.GenreService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/genres")
+@RequestMapping("/genre")
+@RequiredArgsConstructor
 public class GenreController {
-
-    @Autowired
-    private GenreService genreService;
+    private final GenreService service;
 
     @GetMapping
-    public List<Genre> getAll() {
-        return genreService.getAll();
+    public ResponseEntity<List<GenreDto>> getAll() {
+        return ResponseEntity.ok(service.getAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Genre> getById(@PathVariable Long id) {
-        Genre genre = genreService.getById(id);
-        if (genre == null) {
-            return ResponseEntity.notFound().build();
-        }
-        return ResponseEntity.ok(genre);
+    public ResponseEntity<?> getById(@PathVariable Long id) {
+        GenreDto dto = service.getById(id);
+        if (dto == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Genre not found");
+        return ResponseEntity.ok(dto);
     }
 
     @PostMapping
-    public Genre add(@RequestBody Genre genre) {
-        genreService.add(genre);
-        return genre;
+    public ResponseEntity<?> add(@RequestBody GenreDto dto) {
+        boolean created = service.add(dto);
+        if (!created) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid data");
+        return ResponseEntity.status(HttpStatus.CREATED).body("Genre created successfully");
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Genre> update(@PathVariable Long id, @RequestBody Genre genre) {
-        genreService.update(id, genre);
-        return ResponseEntity.ok(genreService.getById(id));
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody GenreDto dto) {
+        boolean updated = service.update(id, dto);
+        if (!updated) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Update failed");
+        return ResponseEntity.ok("Genre updated successfully");
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        genreService.delete(id);
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        service.delete(id);
         return ResponseEntity.noContent().build();
     }
 }

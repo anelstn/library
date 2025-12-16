@@ -1,12 +1,12 @@
 package library.library.service;
 
-import library.library.model.Genre;
+import library.library.dto.GenreDto;
 import java.util.List;
 
 public interface GenreService {
-    List<Genre> getAll();
-    Genre getById(Long id);
-    void add(Genre genre);
-    void update(Long id, Genre genre);
+    List<GenreDto> getAll();
+    GenreDto getById(Long id);
+    boolean add(GenreDto genreDto);
+    boolean update(Long id, GenreDto genreDto);
     void delete(Long id);
 }

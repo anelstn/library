@@ -1,12 +1,12 @@
 package library.library.service;
 
-import library.library.model.Book;
+import library.library.dto.BookDto;
 import java.util.List;
 
 public interface BookService {
-    List<Book> getAll();
-    Book getById(Long id);
-    void add(Book book);
-    void update(Long id, Book book);
+    List<BookDto> getAll();
+    BookDto getById(Long id);
+    boolean add(BookDto bookDto);
+    boolean update(Long id, BookDto bookDto);
     void delete(Long id);
 }

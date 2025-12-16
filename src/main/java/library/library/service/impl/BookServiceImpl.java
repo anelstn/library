@@ -1,48 +1,48 @@
 package library.library.service.impl;
 
-import library.library.model.Book;
+import library.library.dto.BookDto;
+import library.library.mapper.BookMapper;
 import library.library.repository.BookRepository;
 import library.library.service.BookService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Objects;
 
 @Service
+@RequiredArgsConstructor
 public class BookServiceImpl implements BookService {
-
-    @Autowired
-    private BookRepository bookRepository;
-
-    @Override
-    public List<Book> getAll() {
-        return bookRepository.findAll();
-    }
+    private final BookRepository repository;
+    private final BookMapper mapper;
 
     @Override
-    public Book getById(Long id) {
-        return bookRepository.findById(id).orElse(null);
+    public List<BookDto> getAll() {
+        return mapper.toDtoList(repository.findAll());
     }
-
     @Override
-    public void add(Book book) {
-        bookRepository.save(book);
+    public BookDto getById(Long id) {
+        return mapper.toDto(repository.findById(id).orElse(null));
     }
-
     @Override
-    public void update(Long id, Book book) {
-        Book existing = bookRepository.findById(id).orElse(null);
-        if (existing != null) {
-            existing.setTitle(book.getTitle());
-            existing.setPages(book.getPages());
-            existing.setYear(book.getYear());
-            existing.setAuthor(book.getAuthor());
-            existing.setGenres(book.getGenres());
-            bookRepository.save(existing);
-        }
+    public boolean add(BookDto bookDto) {
+        if (Objects.isNull(bookDto)) return false;
+        repository.save(mapper.toEntity(bookDto));
+        return true;
     }
-
+    @Override
+    public boolean update(Long id, BookDto bookDto) {
+        BookDto oldBook = getById(id);
+        if (Objects.isNull(oldBook) || Objects.isNull(bookDto)) return false;
+        oldBook.setTitleDto(bookDto.getTitleDto());
+        oldBook.setPagesDto(bookDto.getPagesDto());
+        oldBook.setYearDto(bookDto.getYearDto());
+        oldBook.setAuthorDto(bookDto.getAuthorDto());
+        oldBook.setGenresDto(bookDto.getGenresDto());
+        repository.save(mapper.toEntity(oldBook));
+        return true;
+    }
     @Override
     public void delete(Long id) {
-        bookRepository.deleteById(id);
+        repository.deleteById(id);
     }
 }

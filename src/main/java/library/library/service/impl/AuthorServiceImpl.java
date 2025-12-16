@@ -1,45 +1,44 @@
 package library.library.service.impl;
 
-import library.library.model.Author;
+import library.library.dto.AuthorDto;
+import library.library.mapper.AuthorMapper;
 import library.library.repository.AuthorRepository;
 import library.library.service.AuthorService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
+import java.util.Objects;
 
 @Service
+@RequiredArgsConstructor
 public class AuthorServiceImpl implements AuthorService {
-
-    @Autowired
-    private AuthorRepository authorRepository;
-
-    @Override
-    public List<Author> getAll() {
-        return authorRepository.findAll();
-    }
+    private final AuthorRepository repository;
+    private final AuthorMapper mapper;
 
     @Override
-    public Author getById(Long id) {
-        return authorRepository.findById(id).orElse(null);
+    public List<AuthorDto> getAll() {
+        return mapper.toDtoList(repository.findAll());
     }
-
     @Override
-    public void add(Author author) {
-        authorRepository.save(author);
+    public AuthorDto getById(Long id) {
+        return mapper.toDto(repository.findById(id).orElse(null));
     }
-
     @Override
-    public void update(Long id, Author author) {
-        Author existing = authorRepository.findById(id).orElse(null);
-        if (existing != null) {
-            existing.setName(author.getName());
-            authorRepository.save(existing);
-        }
+    public boolean add(AuthorDto authorDto) {
+        if (Objects.isNull(authorDto)) return false;
+        repository.save(mapper.toEntity(authorDto));
+        return true;
     }
-
+    @Override
+    public boolean update(Long id, AuthorDto authorDto) {
+        AuthorDto oldAuthor = getById(id);
+        if (Objects.isNull(oldAuthor) || Objects.isNull(authorDto)) return false;
+        oldAuthor.setNameDto(authorDto.getNameDto());
+        repository.save(mapper.toEntity(oldAuthor));
+        return true;
+    }
     @Override
     public void delete(Long id) {
-        authorRepository.deleteById(id);
+        repository.deleteById(id);
     }
 }

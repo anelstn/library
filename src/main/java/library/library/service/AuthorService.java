@@ -1,12 +1,12 @@
 package library.library.service;
 
-import library.library.model.Author;
+import library.library.dto.AuthorDto;
 import java.util.List;
 
 public interface AuthorService {
-    List<Author> getAll();
-    Author getById(Long id);
-    void add(Author author);
-    void update(Long id, Author author);
+    List<AuthorDto> getAll();
+    AuthorDto getById(Long id);
+    boolean add(AuthorDto authorDto);
+    boolean update(Long id, AuthorDto authorDto);
     void delete(Long id);
 }

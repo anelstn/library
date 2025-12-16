@@ -1,45 +1,47 @@
 package library.library.controller;
 
-import library.library.model.Book;
+import library.library.dto.BookDto;
 import library.library.service.BookService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/books")
+@RequestMapping("/book")
+@RequiredArgsConstructor
 public class BookController {
-
-    @Autowired
-    private BookService bookService;
+    private final BookService service;
 
     @GetMapping
-    public List<Book> getAll() {
-        return bookService.getAll();
+    public ResponseEntity<List<BookDto>> getAll() {
+        return ResponseEntity.ok(service.getAll());
     }
-
     @GetMapping("/{id}")
-    public ResponseEntity<Book> getById(@PathVariable Long id) {
-        Book book = bookService.getById(id);
-        if (book == null) return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(book);
+    public ResponseEntity<?> getById(@PathVariable Long id) {
+        BookDto dto = service.getById(id);
+        if (dto == null) return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Book not found");
+        return ResponseEntity.ok(dto);
     }
 
     @PostMapping
-    public Book add(@RequestBody Book book) {
-        bookService.add(book); return book;
+    public ResponseEntity<?> add(@RequestBody BookDto dto) {
+        boolean created = service.add(dto);
+        if (!created) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid data");
+        return ResponseEntity.status(HttpStatus.CREATED).body("Book created successfully");
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Book> update(@PathVariable Long id, @RequestBody Book book) {
-        bookService.update(id, book);
-        return ResponseEntity.ok(bookService.getById(id));
+    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody BookDto dto) {
+        boolean updated = service.update(id, dto);
+        if (!updated) return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Update failed");
+        return ResponseEntity.ok("Book updated successfully");
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
-        bookService.delete(id);
+    public ResponseEntity<?> delete(@PathVariable Long id) {
+        service.delete(id);
         return ResponseEntity.noContent().build();
     }
 }
