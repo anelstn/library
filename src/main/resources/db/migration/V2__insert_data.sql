@@ -11,5 +11,5 @@ INSERT INTO book (title, pages, year, author_id) VALUES ('Pride and Prejudice', 
 INSERT INTO book (title, pages, year, author_id) VALUES ('Baqytsyz Jamal', 250, 1910, 3);
 
 INSERT INTO book_genre (book_id, genre_id) VALUES (1, 1);
-INSERT INTO book_genre (book_id, genre_id) VALUES (2, 1);
-INSERT INTO book_genre (book_id, genre_id) VALUES (3, 2);
+INSERT INTO book_genre (book_id, genre_id) VALUES (2, 2);
+INSERT INTO book_genre (book_id, genre_id) VALUES (3, 3);

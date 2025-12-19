@@ -17,7 +17,9 @@ CREATE TABLE book (
 );
 
 CREATE TABLE book_genre (
-    book_id BIGINT NOT NULL REFERENCES book(id),
-    genre_id BIGINT NOT NULL REFERENCES genre(id),
-    PRIMARY KEY (book_id, genre_id)
+    book_id BIGINT NOT NULL,
+    genre_id BIGINT NOT NULL,
+    PRIMARY KEY (book_id, genre_id),
+    FOREIGN KEY (book_id) REFERENCES book(id),
+    FOREIGN KEY (genre_id) REFERENCES genre(id)
 );
