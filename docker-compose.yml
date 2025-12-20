@@ -1,8 +1,7 @@
 version: '3.9'
 services:
   library-app:
-    build:
-      context: .
+    image: anelsultanbek/my-library-app
     container_name: library-app
     depends_on:
       - postgres-db
@@ -15,7 +14,6 @@ services:
       SPRING_FLYWAY_ENABLED: true
     ports:
       - "8081:8080"
-    command: java -jar build/libs/library-0.0.1-SNAPSHOT.jar
 
   postgres-db:
     image: postgres:15
